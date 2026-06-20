@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Space Nari Company - Exploración Espacial Educativa</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #0B1EE0;
+      --accent: #FF6B1A;
+      --highlight: #FFD600;
+      --dark: #060810;
+      --gray: #8A94B2;
+      --white: #F0F4FF;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--dark);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* FONDO DE ESTRELLAS */
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* CONTENEDOR PRINCIPAL */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* NAVEGACION */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(6, 8, 16, 0.9);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(11, 30, 224, 0.2);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav .logo {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.2rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+    }
+
+    nav .logo span {
+      color: var(--accent);
+    }
+
+    nav a {
+      color: var(--gray);
+      text-decoration: none;
+      margin-left: 2rem;
+      font-size: 0.9rem;
+      transition: color 0.3s;
+    }
+
+    nav a:hover {
+      color: var(--accent);
+    }
+
+    /* SECCION HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding-top: 80px;
+    }
+
+    .hero h1 {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(3rem, 8vw, 5rem);
+      font-weight: 900;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--primary), var(--accent), var(--highlight));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.02em;
+    }
+
+    .hero p {
+      font-size: 1.3rem;
+      color: var(--highlight);
+      margin-bottom: 1rem;
+      font-family: 'Orbitron', monospace;
+    }
+
+    .hero-desc {
+      font-size: 1.1rem;
+      color: var(--gray);
+      max-width: 600px;
+      margin-bottom: 3rem;
+      line-height: 1.8;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 1rem 2.5rem;
+      margin: 0.5rem;
+      background: var(--accent);
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: 600;
+      font-family: 'Orbitron', monospace;
+      letter-spacing: 0.05em;
+      transition: all 0.3s;
+      border: 2px solid var(--accent);
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .btn:hover {
+      background: transparent;
+      color: var(--accent);
+      transform: translateY(-3px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--white);
+      border-color: var(--white);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* SECCIONES */
+    section {
+      padding: 6rem 2rem;
+      border-top: 1px solid rgba(11, 30, 224, 0.1);
+    }
+
+    .section-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 900;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      color: var(--accent);
+      font-size: 0.9rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+    }
+
+    .divider {
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--highlight));
+      margin: 1rem auto 2rem;
+    }
+
+    /* GRID CARDS */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .card {
+      background: rgba(11, 30, 224, 0.08);
+      border: 1px solid rgba(11, 30, 224, 0.2);
+      padding: 2rem;
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+
+    .card:hover {
+      border-color: var(--accent);
+      transform: translateY(-5px);
+      background: rgba(11, 30, 224, 0.12);
+    }
+
+    .card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      color: var(--white);
+    }
+
+    .card p {
+      color: var(--gray);
+      line-height: 1.8;
+    }
+
+    .card-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    /* MISION Y VISION */
+    .mv-section {
+      background: rgba(8, 12, 26, 0.5);
+    }
+
+    .mv-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .mv-card {
+      background: rgba(11, 30, 224, 0.1);
+      border-left: 4px solid var(--accent);
+      padding: 2.5rem;
+      border-radius: 4px;
+    }
+
+    .mv-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: var(--highlight);
+    }
+
+    .mv-card p {
+      color: var(--gray);
+      line-height: 1.9;
+      font-size: 1rem;
+    }
+
+    /* VALORES */
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .value {
+      text-align: center;
+      padding: 2rem 1rem;
+      background: rgba(11, 30, 224, 0.08);
+      border: 1px solid rgba(11, 30, 224, 0.2);
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+
+    .value:hover {
+      border-color: var(--accent);
+      background: rgba(11, 30, 224, 0.15);
+    }
+
+    .value-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .value h4 {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-family: 'Orbitron', monospace;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 3rem 2rem;
+      border-top: 1px solid rgba(11, 30, 224, 0.2);
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+
+    footer .logo {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.2rem;
+      font-weight: 900;
+      margin-bottom: 1rem;
+      color: var(--white);
+    }
+
+    footer .logo span {
+      color: var(--accent);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      nav {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      nav a {
+        margin-left: 0;
+      }
+
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+
+      .mv-grid {
+        grid-template-columns: 1fr;
+      }
+
+      section {
+        padding: 4rem 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- CANVAS PARA ESTRELLAS -->
+<canvas id="stars"></canvas>
+
+<!-- NAVEGACION -->
+<nav>
+  <div class="logo">SPACE <span>NARI</span></div>
+  <div>
+    <a href="#mision">Misión</a>
+    <a href="#proyectos">Proyectos</a>
+    <a href="#valores">Valores</a>
+    <a href="#contacto">Contacto</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <p>Organización Educativa Espacial</p>
+    <h1>Space Nari Company</h1>
+    <p>"Hoy aprendemos, mañana despegamos."</p>
+    <p class="hero-desc">
+      Acercamos el espacio, la astronomía y la exploración espacial a niños y jóvenes.
+      Inspiramos a la próxima generación de científicos, ingenieros y astronautas.
+    </p>
+    <div>
+      <a href="#proyectos" class="btn">Explorar Proyectos</a>
+      <a href="#mision" class="btn btn-outline">Saber Más</a>
+    </div>
+  </div>
+</section>
+
+<!-- MISION Y VISION -->
+<section id="mision" class="mv-section">
+  <div class="container">
+    <div class="section-subtitle">Quiénes Somos</div>
+    <h2 class="section-title">Misión y Visión</h2>
+    <div class="divider"></div>
+    
+    <div class="mv-grid">
+      <div class="mv-card">
+        <h3>🎯 Misión</h3>
+        <p>
+          Enseñar sobre el universo mediante experiencias prácticas, creatividad, 
+          tecnología y proyectos espaciales que transforman la curiosidad en conocimiento.
+        </p>
+      </div>
+      <div class="mv-card">
+        <h3>🔭 Visión</h3>
+        <p>
+          Convertirnos en una organización reconocida internacionalmente por impulsar 
+          la educación espacial y desarrollar proyectos propios de exploración del cosmos.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VALORES -->
+<section id="valores">
+  <div class="container">
+    <div class="section-subtitle">Principios</div>
+    <h2 class="section-title">Nuestros Valores</h2>
+    <div class="divider"></div>
+    
+    <div class="values-grid">
+      <div class="value">
+        <div class="value-icon">🔍</div>
+        <h4>Curiosidad</h4>
+      </div>
+      <div class="value">
+        <div class="value-icon">💡</div>
+        <h4>Innovación</h4>
+      </div>
+      <div class="value">
+        <div class="value-icon">🔬</div>
+        <h4>Ciencia</h4>
+      </div>
+      <div class="value">
+        <div class="value-icon">🤝</div>
+        <h4>Respeto</h4>
+      </div>
+      <div class="value">
+        <div class="value-icon">👥</div>
+        <h4>Teamwork</h4>
+      </div>
+      <div class="value">
+        <div class="value-icon">🕊️</div>
+        <h4>Paz</h4>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROYECTOS -->
+<section id="proyectos">
+  <div class="container">
+    <div class="section-subtitle">Iniciativas</div>
+    <h2 class="section-title">Nuestros Proyectos</h2>
+    <div class="divider"></div>
+    
+    <div class="grid">
+      <div class="card">
+        <div class="card-icon">🎓</div>
+        <h3>Academia Espacial Nari</h3>
+        <p>Cursos y talleres especializados para jóvenes apasionados por el espacio y la ciencia.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🚀</div>
+        <h3>Proyecto Cohete</h3>
+        <p>Construcción de cohetes educativos con los recursos disponibles. El futuro es ahora.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔭</div>
+        <h3>Observatorio Nari</h3>
+        <p>Actividades de observación astronómica para descubrir el universo con nuestros ojos.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🛰️</div>
+        <h3>Centro de Control Nari</h3>
+        <p>Sistema para el seguimiento de misiones y proyectos activos de la organización.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📡</div>
+        <h3>Radio Espacial Nari</h3>
+        <p>Captación de señales de satélites y exploración del espacio desde tierra.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📚</div>
+        <h3>Archivo Nari</h3>
+        <p>Registro histórico completo de todos los proyectos y misiones de SNC.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FUTURAS MISIONES -->
+<section id="misiones" class="mv-section">
+  <div class="container">
+    <div class="section-subtitle">Próximos Pasos</div>
+    <h2 class="section-title">Futuras Misiones</h2>
+    <div class="divider"></div>
+    
+    <div class="grid">
+      <div class="card">
+        <h3>NARI-1</h3>
+        <p>Primer proyecto espacial educativo. El inicio de algo histórico.</p>
+      </div>
+      <div class="card">
+        <h3>NARI-2</h3>
+        <p>Experimentos científicos y análisis de frontera en el espacio.</p>
+      </div>
+      <div class="card">
+        <h3>Proyecto Luna</h3>
+        <p>Investigación y simulación de misiones lunares para el futuro.</p>
+      </div>
+      <div class="card">
+        <h3>Proyecto Marte</h3>
+        <p>Estudio profundo de la exploración marciana y sus desafíos.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section id="contacto">
+  <div class="container">
+    <div class="section-subtitle">Únete a Nosotros</div>
+    <h2 class="section-title">¿Quieres Ser Parte de SNC?</h2>
+    <div class="divider"></div>
+    
+    <p style="text-align: center; font-size: 1.1rem; color: var(--gray); max-width: 600px; margin: 0 auto 2rem;">
+      Space Nari Company está en búsqueda de apasionados por el espacio, la ciencia y la educación. 
+      Si te interesa ser parte de esta misión, ¡contáctanos!
+    </p>
+    
+    <div style="text-align: center;">
+      <a href="mailto:contacto@spacenaricompany.com" class="btn">Enviar Email</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo">SPACE <span>NARI</span> COMPANY</div>
+  <p>© 2025 Space Nari Company (SNC) — Todos los derechos reservados.</p>
+  <p style="margin-top: 1rem; color: var(--primary);">"Hoy aprendemos, mañana despegamos." 🚀🌌</p>
+</footer>
+
+<!-- SCRIPT PARA ESTRELLAS -->
+<script>
+  const canvas = document.getElementById('stars');
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const stars = [];
+  for (let i = 0; i < 200; i++) {
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      radius: Math.random() * 1.5,
+      opacity: Math.random() * 0.5 + 0.5,
+      twinkle: Math.random() * Math.PI * 2
+    });
+  }
+
+  function animate() {
+    ctx.fillStyle = 'rgba(6, 8, 16, 1)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    stars.forEach((star) => {
+      star.twinkle += 0.01;
+      const alpha = star.opacity * (0.5 + 0.5 * Math.sin(star.twinkle));
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(200, 215, 255, ${alpha})`;
+      ctx.fill();
+    });
+
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+</script>
+
+</body>
+</html>
